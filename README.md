@@ -1,10 +1,16 @@
 
-Diff Field Partial Dependency
-========================
+Collinear Feature Partial Dependency
+=====================================
+
+```
+STATUS: Incomplete -- This is a work in progress
+```
 
 This project demonstrates a method for generating partial dependency analysis when your 
-data contains fields that are derived via a difference. 
+data contains fields that are perfectly collinear. In other words they have been derived
+from each other. 
 
+This initial implementation will deal with difference fields only.
 For example, your data contains your product price, a competing products price and the
 difference between these prices.
 
