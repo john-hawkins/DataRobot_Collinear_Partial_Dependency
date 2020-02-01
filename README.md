@@ -49,13 +49,14 @@ vi config.yml
 ## About
 
 The core functions that create the partial dependencies are found 
-inside the file [PartialDependency.py](PartialDependency.py). 
+inside the file [PartialDependency.py](src/PartialDependency.py) 
 
 These functions are used by the example script and the web application example.
 
 ## Caveats
 
-Currently the implementation only works for difference fields
+Currently the implementation only works for difference fields and requires that the data contain
+both the two original fields, and that all three are used by the DataRobot model.
 
 ## Usage
 
