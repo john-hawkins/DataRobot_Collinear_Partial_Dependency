@@ -32,13 +32,12 @@ pip install -U datarobot_batch_scoring
 You will also need a bunch of python libraries, including the DataRobot API
 
 ```
-pip install chardet
 pip install numpy
 pip install pandas
 pip install datarobot
 ```
 
-You will need create the CONFIG file and fill in the required details from the deployed model.
+You will need create the [CONFIG](config.yml.example) file and fill in the required details from the deployed model.
 
 We provide an example you can copy and then modify:
 
@@ -56,16 +55,29 @@ These functions are used by the example script and the web application example.
 
 ## Caveats
 
+Currently the implementation only works for difference fields
 
 ## Usage
 
+### Scripts
+
 The script [Example.py](Example.py) Shows you how to create the partial dependency in a standalone python script.
+
+This script will generate a plot like the one below.
+ 
+![Product price difference partial dependency](scripts/Example.png "Product price difference partial dependency" )
+
+
+### Application
+
+'''
+THIS IS NOT IMPLEMENTED YET
+'''
 
 The file [app.py](app.py) and the contents of the [templates](templates) directory is a python flask 
 web application you can use to generate partial dependency plots for an uploaded data set.
 
 It will store the plots generated in the folder [static](static) so that they do not need to be re-generated.
-
 
 To run:
 

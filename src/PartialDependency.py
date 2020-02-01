@@ -47,14 +47,18 @@ def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, filename
     plt1 = pdep[colone]
     plt2 = pdep[coltwo]
 
-    plt.plot( plt1[diffcol], dim1[TARGET], marker='', color='olive', linewidth=2, label=colone)
-    plt.plot( plt2[diffcol], dim2[TARGET], marker='', color='olive', linewidth=2, linestyle='dashed', label=colone)
+    plt.plot( plt1[diffcol], plt1[TARGET], marker='', color='#1111AA', linewidth=2, label=colone)
+    plt.plot( plt2[diffcol], plt2[TARGET], marker='', color='#AA1111', linewidth=2, linestyle='dashed', label=coltwo)
+    plt.fill_between( plt1[diffcol], plt1['lower'], plt1['upper'], color='#AAAADD', alpha=0.2)
+    plt.fill_between( plt2[diffcol], plt2['lower'], plt2['upper'], color='#DDAAAA', alpha=0.2)
     plt.legend()
+    plt.xlabel(diffcol)
+    plt.ylabel(TARGET)
     plt.savefig(filename, format='png')
 
  
 # ################################################################################
-def generate_diff_col_pd_data(proj, mod, pdata, diffcol, colone, coltwo):
+def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo):
     """ Generate two unique partial dependency plots for a differenced column.
         In each plot one of the reference columns is held unchanged and the other is
         modified to ensure that the difference relationship is maintained.
@@ -64,22 +68,22 @@ def generate_diff_col_pd_data(proj, mod, pdata, diffcol, colone, coltwo):
     TARGET=proj.target
     results = {}
 
-    print("Rows in dataset:", len(pdata))
-    diffcol_values = get_test_values(pdata, diffcol)
-    colone_values = get_test_values(pdata, colone)
-    coltwo_values = get_test_values(pdata, coltwo)
+    print("Rows in dataset:", len(data))
+    diffcol_values = get_test_values(data, diffcol)
+    colone_values = get_test_values(data, colone)
+    coltwo_values = get_test_values(data, coltwo)
     total_variations = len(diffcol_values)
     print("Total Variations: ", total_variations)
     samples = int(30000/total_variations)
-    if samples > len(pdata):
-        samples = len(pdata)
+    if samples > len(data):
+        samples = len(data)
     print("Number of Samples:", samples)
 
     """
       WE HAVE TO ADD A RANDOM STATE TO ENSURE THAT THE SAMPLES ARE UNIQUE
       EACH TIME WE EXECUTE. OTHERWISE THERE CAN BE ISSUES WHEN YOU RE_RUN THE SAME DATA
     """
-    data_sample = pdata.sample(samples, random_state=round(time.time()) )
+    data_sample = data.sample(samples, random_state=round(time.time()) )
 
     """
       FIRST RUN THE DATA FOR WHICH WE LOOK AT HOLDING colone FIXED
@@ -148,7 +152,6 @@ def generate_diff_col_pd_data(proj, mod, pdata, diffcol, colone, coltwo):
     output = sp.check_output(command, stderr=sp.STDOUT)
 
     preds = pd.read_csv('./out.csv')
-
     pdep = process_scored_records(proj, diffcol, preds)
 
     # CLEAN UP THE CREATED FILES
@@ -164,21 +167,23 @@ def generate_diff_col_pd_data(proj, mod, pdata, diffcol, colone, coltwo):
 def process_scored_records(proj, diffcol, preds):
     """ Process the records from the batch scoring job """
     preds.loc[preds[diffcol].isna(), diffcol] = 'N/A'
-    
     justcols = preds.loc[:,[diffcol,proj.target]]
     if (proj.target_type == 'Classification') :
-       justcols = preds.loc[:,[diffcol,'True']]
-
-    return justcols.groupby(diffcol, as_index=False).mean()
-
+       justcols = preds.loc[:,[diffcol,proj.positive_class]]
+       justcols.columns = [diffcol,proj.target]
+    pdep = justcols.groupby(diffcol, as_index=False).agg({ proj.target:['mean','std'] }) 
+    pdep.columns = [diffcol, proj.target, 'std']
+    pdep['lower'] = pdep[proj.target] - pdep['std']
+    pdep['upper'] = pdep[proj.target] + pdep['std']
+    return pdep
 
 # ################################################################################
-def generate_diff_field_pd_embedded(proj, mod, pdata, diffcol, colone, coltwo):
+def generate_diff_field_pd_embedded(proj, mod, data, diffcol, colone, coltwo):
     """
       CREATE A PARTIAL DEPENDENCY AND RETURN STRING CODE TO EMBED 
       INSIDE A FLASK WEB APPLICATION
     """
-    pdep = generate2WayPD_Data(proj, mod, pdata, colone, coltwo)
+    pdep = generate2WayPD_Data(proj, mod, data, colone, coltwo)
     TARGET=proj.target
     dim1 = pdep[colone]
     dim2 = pdep[coltwo]
