@@ -80,7 +80,7 @@ It will store the plots generated in the folder [static](static) so that they do
 
 An example of the reuslts page is show below:
 
-![Product price difference partial dependency](statis/screen_shot.png "Product price difference partial dependency" )
+![Product price difference partial dependency](static/screen_shot.png "Product price difference partial dependency" )
 
 
 To run:
