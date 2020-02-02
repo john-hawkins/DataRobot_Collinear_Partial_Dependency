@@ -1,0 +1,15 @@
+{% include "header.html" %}
+
+<div class="chooser text-center">
+  <h3>Project: [{{ project.project_name }}] Target: [{{ project.target }}]</h3>
+</div>
+
+<div class="controlpanel text-center">
+    <H3>Model {{ model.model_type }}</H3>
+    <H4>{{diffcol}} = {{colone}} - {{coltwo}}<H4>
+</div>
+
+<img src="{{ pdplot }}">
+
+{% include "footer.html" %}
+

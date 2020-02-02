@@ -17,16 +17,20 @@ import time
 import yaml
 import io
 
-"""
- LOAD CONFIG DATA
- For running the batch scoring script
-"""
-config = yaml.safe_load(open('../config.yml'))
 
-API_TOKEN = config['API_TOKEN']
-USERNAME = config['USERNAME']
-DATAROBOT_KEY = config['DATAROBOT_KEY']
-HOST = config['HOST']
+#    """
+#      LOAD CONFIG DATA
+#      For running the batch scoring script
+#    """
+# ################################################################################
+def load_config(configfile):
+    config = yaml.safe_load(open(configfile))
+    API_TOKEN = config['API_TOKEN']
+    USERNAME = config['USERNAME']
+    DATAROBOT_KEY = config['DATAROBOT_KEY']
+    HOST = config['HOST']
+    return API_TOKEN,USERNAME,DATAROBOT_KEY,HOST
+
 
 # ################################################################################
 def get_test_values(data, col):
@@ -37,32 +41,14 @@ def get_test_values(data, col):
         vals = np.arange(min(vals), max(vals)+col_inc, col_inc)
     return vals
 
-# ################################################################################
-def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, filename):
-    """ Generate the partial dependency plot for a variable that is defined as a difference between 2 other variables """
-    pdep = generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo)
-
-    TARGET=proj.target
-
-    plt1 = pdep[colone]
-    plt2 = pdep[coltwo]
-
-    plt.plot( plt1[diffcol], plt1[TARGET], marker='', color='#1111AA', linewidth=2, label=colone)
-    plt.plot( plt2[diffcol], plt2[TARGET], marker='', color='#AA1111', linewidth=2, linestyle='dashed', label=coltwo)
-    plt.fill_between( plt1[diffcol], plt1['lower'], plt1['upper'], color='#AAAADD', alpha=0.2)
-    plt.fill_between( plt2[diffcol], plt2['lower'], plt2['upper'], color='#DDAAAA', alpha=0.2)
-    plt.legend()
-    plt.xlabel(diffcol)
-    plt.ylabel(TARGET)
-    plt.savefig(filename, format='png')
-
  
 # ################################################################################
-def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo):
+def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfile):
     """ Generate two unique partial dependency plots for a differenced column.
         In each plot one of the reference columns is held unchanged and the other is
         modified to ensure that the difference relationship is maintained.
     """
+    API_TOKEN, USERNAME, DATAROBOT_KEY, HOST = load_config(configfile) 
     PROJECT_ID=proj.id
     MODEL_ID=mod.id
     TARGET=proj.target
@@ -181,26 +167,43 @@ def process_scored_records(proj, diffcol, preds):
 def generate_diff_field_pd_embedded(proj, mod, data, diffcol, colone, coltwo):
     """
       CREATE A PARTIAL DEPENDENCY AND RETURN STRING CODE TO EMBED 
-      INSIDE A FLASK WEB APPLICATION
+      INSIDE A FLASK WEB APPLICATION -- THIS DOES NOT WORK YET
     """
-    pdep = generate2WayPD_Data(proj, mod, data, colone, coltwo)
-    TARGET=proj.target
-    dim1 = pdep[colone]
-    dim2 = pdep[coltwo]
-    dim3 = pdep[TARGET]
+
+    plt = generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo)
 
     img = io.BytesIO()
     mpl.rcParams['legend.fontsize'] = 10
-    fig = plt.figure()
-    ax = fig.gca(projection='3d')
-    ax.plot_trisurf(dim1, dim2, dim3, cmap=cm.coolwarm, linewidth=0, antialiased=False)
-    ax.set_xlabel(colone)
-    ax.set_ylabel(coltwo)
-    ax.set_zlabel(TARGET)
     plt.savefig(img, format='png')
     img.seek(0)
     plot_url = base64.b64encode(img.getvalue()).decode()
 
     return 'data:image/png;base64,{}'.format(plot_url)
 
+# ################################################################################
+def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, configfile):
+    """ Generate the partial dependency plot for a variable that is defined as a difference between 2 other variables """
+    pdep = generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfile)
+
+    TARGET=proj.target
+
+    plt1 = pdep[colone]
+    plt2 = pdep[coltwo]
+
+    plt.plot( plt1[diffcol], plt1[TARGET], marker='', color='#1111AA', linewidth=2, label=colone)
+    plt.plot( plt2[diffcol], plt2[TARGET], marker='', color='#AA1111', linewidth=2, linestyle='dashed', label=coltwo)
+    plt.fill_between( plt1[diffcol], plt1['lower'], plt1['upper'], color='#AAAADD', alpha=0.2)
+    plt.fill_between( plt2[diffcol], plt2['lower'], plt2['upper'], color='#DDAAAA', alpha=0.2)
+    plt.legend()
+    plt.xlabel(diffcol)
+    plt.ylabel(TARGET)
+    return plt
+
+# ################################################################################
+def generate_diff_col_pd_plot_and_save(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE, plotpath):
+    plt = generate_diff_col_pd_plot(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE)
+    print("PLOT GENERATED -- SAVING TO: ", plotpath)
+    plt.savefig(plotpath, format='png')
+    print("SAVED")
+    plt.close()
 

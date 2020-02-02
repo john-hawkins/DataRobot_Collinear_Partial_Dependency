@@ -71,14 +71,15 @@ This script will generate a plot like the one below.
 
 ### Application
 
-'''
-THIS IS NOT IMPLEMENTED YET
-'''
-
 The file [app.py](app.py) and the contents of the [templates](templates) directory is a python flask 
 web application you can use to generate partial dependency plots for an uploaded data set.
 
 It will store the plots generated in the folder [static](static) so that they do not need to be re-generated.
+
+An example of the reuslts page is show below:
+
+![Product price difference partial dependency](statis/screen_shot.png "Product price difference partial dependency" )
+
 
 To run:
 
@@ -86,6 +87,5 @@ To run:
 python app.py
 ```
 
-Then follow the prompts
-
+Then follow the prompts.
 
