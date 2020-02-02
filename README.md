@@ -3,7 +3,9 @@ Collinear Feature Partial Dependency
 =====================================
 
 ```
-STATUS: Incomplete -- This is a work in progress
+STATUS: First Functional Version
+
+TODO: Extend collinear function support beyond difference
 ```
 
 This project demonstrates a method for generating partial dependency analysis when your 
