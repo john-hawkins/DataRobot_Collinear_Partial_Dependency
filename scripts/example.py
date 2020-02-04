@@ -8,8 +8,8 @@ import PartialDependency as partd
 # DEFINE THE PROJECT AND MODEL WE WANT TO USE
 
 PROJECT_ID = '5e3565db79dd6b1936771628'
-MODEL_ID = '5e35665d5143d8794be3888a'
-
+MODEL_ID = '5e35665d5143d8794be38896'
+ 
 # LOAD THE PROJECT AND MODEL
 proj = dr.Project.get(project_id=PROJECT_ID)
 mod =  dr.Model.get(PROJECT_ID, model_id=MODEL_ID)

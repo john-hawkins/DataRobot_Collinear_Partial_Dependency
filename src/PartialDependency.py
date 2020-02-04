@@ -107,7 +107,7 @@ def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfi
     cleanup = ['rm', 'out.csv', 'datarobot_batch_scoring_main.log', 'XX_temp_data_for_scoring.csv']
     output = sp.check_output(cleanup, stderr=sp.STDOUT)
 
-    results[colone] = pdep
+    results[coltwo] = pdep
 
     """
      THEN WE RUN THE DATA AGAIN WHERE WE LOOK AT HOLDING coltwo FIXED
@@ -144,7 +144,7 @@ def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfi
     cleanup = ['rm', 'out.csv', 'datarobot_batch_scoring_main.log', 'XX_temp_data_for_scoring.csv']
     output = sp.check_output(cleanup, stderr=sp.STDOUT)
 
-    results[coltwo] = pdep
+    results[colone] = pdep
 
     return results
 
@@ -190,8 +190,8 @@ def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, configfi
     plt1 = pdep[colone]
     plt2 = pdep[coltwo]
 
-    plt.plot( plt1[diffcol], plt1[TARGET], marker='', color='#1111AA', linewidth=2, label=colone)
-    plt.plot( plt2[diffcol], plt2[TARGET], marker='', color='#AA1111', linewidth=2, linestyle='dashed', label=coltwo)
+    plt.plot( plt1[diffcol], plt1[TARGET], marker='', color='#1111AA', linewidth=2, label=("Varying: "+colone) )
+    plt.plot( plt2[diffcol], plt2[TARGET], marker='', color='#AA1111', linewidth=2, linestyle='dashed', label=("Varying: "+coltwo))
     plt.fill_between( plt1[diffcol], plt1['lower'], plt1['upper'], color='#AAAADD', alpha=0.2)
     plt.fill_between( plt2[diffcol], plt2['lower'], plt2['upper'], color='#DDAAAA', alpha=0.2)
     plt.legend()
