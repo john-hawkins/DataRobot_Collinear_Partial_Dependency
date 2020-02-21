@@ -121,9 +121,7 @@ def generate():
             nrows = len(pdata)
             ncols = len(pdata.columns)
             partd.generate_diff_col_pd_plot_and_save(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE, plotpath)
-            #plt = partd.generate_diff_col_pd_plot(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE)
-            #plt.savefig(plotpath, format='png')
-            #plt.close()
+
             return render_template("generated.html", project=proj, model=mod, diffcol=diffcol, operator=operator,
                                     colone=colone, coltwo=coltwo, pdplot=plotpath)
 

@@ -18,12 +18,12 @@ import yaml
 import io
 
 
-#    """
-#      LOAD CONFIG DATA
-#      For running the batch scoring script
-#    """
 # ################################################################################
 def load_config(configfile):
+    """
+      LOAD CONFIG DATA
+      For running the batch scoring script
+    """
     config = yaml.safe_load(open(configfile))
     API_TOKEN = config['API_TOKEN']
     USERNAME = config['USERNAME']
@@ -153,10 +153,13 @@ def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfi
 def process_scored_records(proj, diffcol, preds):
     """ Process the records from the batch scoring job """
     preds.loc[preds[diffcol].isna(), diffcol] = 'N/A'
-    justcols = preds.loc[:,[diffcol,proj.target]]
-    if (proj.target_type == 'Classification') :
-       justcols = preds.loc[:,[diffcol,proj.positive_class]]
-       justcols.columns = [diffcol,proj.target]
+
+    if (proj.target_type == 'Binary') :
+       justcols = preds.loc[:,[diffcol, 'true']]
+       justcols.columns = [diffcol, proj.target]
+    else:
+        justcols = preds.loc[:,[diffcol, proj.target]]
+
     pdep = justcols.groupby(diffcol, as_index=False).agg({ proj.target:['mean','std'] }) 
     pdep.columns = [diffcol, proj.target, 'std']
     pdep['lower'] = pdep[proj.target] - pdep['std']
