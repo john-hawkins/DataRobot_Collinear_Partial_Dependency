@@ -64,7 +64,7 @@ both the two original fields, and that all three are used by the DataRobot model
 
 ### Scripts
 
-The script [Example.py](Example.py) Shows you how to create the partial dependency in a standalone python script.
+The script [Example.py](scripts/Example.py) Shows you how to create the partial dependency in a standalone python script.
 
 This script will generate a plot like the one below.
  
