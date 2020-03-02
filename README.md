@@ -5,6 +5,8 @@ Collinear Feature Partial Dependency
 ```
 STATUS: First Functional Version
 
+CURRENTLY: Removing requirement for python batch scoring
+
 TODO: Extend collinear function support beyond difference
 ```
 
@@ -25,11 +27,6 @@ of the model.
  
 You will need a DataRobot account and access to a dedicated prediction server.
 
-You will need the python batch scoring script (used to score the variations efficiently).
-
-```
-pip install -U datarobot_batch_scoring
-```
 
 You will also need a bunch of python libraries, including the DataRobot API
 

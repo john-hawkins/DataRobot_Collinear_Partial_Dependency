@@ -82,30 +82,13 @@ def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfi
         partial_dependence_dfs.append(temp_data)
 
     partial_dependence_df = pd.concat(partial_dependence_dfs)
-    partial_dependence_df.to_csv('./XX_temp_data_for_scoring.csv', index=False)
-    keep_cols = [diffcol]
-    # SET UP THE BATCH PROCESS AND RUN
-    command = ['batch_scoring',
-               '-y',
-               '--host', HOST,
-               '--user', USERNAME,
-               '--api_token', API_TOKEN,
-               '--datarobot_key', DATAROBOT_KEY,
-               '--keep_cols', ','.join(keep_cols),
-               PROJECT_ID,
-               MODEL_ID,
-               './XX_temp_data_for_scoring.csv']    
 
-    print("EXECUTING COMMAND:", ' '.join(command))
-    output = sp.check_output(command, stderr=sp.STDOUT)
-
-    preds = pd.read_csv('./out.csv') 
-
+    dataset = proj.upload_dataset(partial_dependence_df)
+    pred_job = mod.request_predictions(dataset.id)
+    preds = dr.models.predict_job.wait_for_async_predictions(proj.id, predict_job_id=pred_job.id, max_wait=600)
+    temp = partial_dependence_df.reset_index()[diffcol]
+    preds[diffcol] = temp
     pdep = process_scored_records(proj, diffcol, preds)
-
-    # CLEAN UP THE CREATED FILES
-    cleanup = ['rm', 'out.csv', 'datarobot_batch_scoring_main.log', 'XX_temp_data_for_scoring.csv']
-    output = sp.check_output(cleanup, stderr=sp.STDOUT)
 
     results[coltwo] = pdep
 
@@ -120,30 +103,14 @@ def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfi
         partial_dependence_dfs.append(temp_data)
     
     partial_dependence_df = pd.concat(partial_dependence_dfs)
-    partial_dependence_df.to_csv('./XX_temp_data_for_scoring.csv', index=False)
-    keep_cols = [diffcol]
-    # SET UP THE BATCH PROCESS AND RUN
-    command = ['batch_scoring',
-               '-y',
-               '--host', HOST,
-               '--user', USERNAME,
-               '--api_token', API_TOKEN,
-               '--datarobot_key', DATAROBOT_KEY,
-               '--keep_cols', ','.join(keep_cols),
-               PROJECT_ID,
-               MODEL_ID,
-               './XX_temp_data_for_scoring.csv']  
-        
-    print("EXECUTING COMMAND:", ' '.join(command))
-    output = sp.check_output(command, stderr=sp.STDOUT)
 
-    preds = pd.read_csv('./out.csv')
+    dataset = proj.upload_dataset(partial_dependence_df)
+    pred_job = mod.request_predictions(dataset.id)
+    preds = dr.models.predict_job.wait_for_async_predictions(proj.id, predict_job_id=pred_job.id, max_wait=600)
+    temp = partial_dependence_df.reset_index()[diffcol]
+    preds[diffcol] = temp 
     pdep = process_scored_records(proj, diffcol, preds)
-
-    # CLEAN UP THE CREATED FILES
-    cleanup = ['rm', 'out.csv', 'datarobot_batch_scoring_main.log', 'XX_temp_data_for_scoring.csv']
-    output = sp.check_output(cleanup, stderr=sp.STDOUT)
-
+ 
     results[colone] = pdep
 
     return results
@@ -158,7 +125,8 @@ def process_scored_records(proj, diffcol, preds):
        justcols = preds.loc[:,[diffcol, 'true']]
        justcols.columns = [diffcol, proj.target]
     else:
-        justcols = preds.loc[:,[diffcol, proj.target]]
+       justcols = preds.loc[:,[diffcol, 'prediction']]
+       justcols.columns = [diffcol, proj.target]
 
     pdep = justcols.groupby(diffcol, as_index=False).agg({ proj.target:['mean','std'] }) 
     pdep.columns = [diffcol, proj.target, 'std']
