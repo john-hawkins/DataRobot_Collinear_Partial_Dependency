@@ -14,7 +14,6 @@ import src.PartialDependency as partd
 app = Flask(__name__)
 
 UPLOAD_FOLDER = './uploads'
-CONFIG_FILE = "./config.yml"
 
 ALLOWED_EXTENSIONS = set(['csv'])
 def allowed_file(filename):
@@ -120,7 +119,7 @@ def generate():
             pdata = pd.read_csv(filepath, encoding=enc['encoding'], low_memory=False)
             nrows = len(pdata)
             ncols = len(pdata.columns)
-            partd.generate_diff_col_pd_plot_and_save(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE, plotpath)
+            partd.generate_diff_col_pd_plot_and_save(proj, mod, pdata, diffcol, colone, coltwo, plotpath)
 
             return render_template("generated.html", project=proj, model=mod, diffcol=diffcol, operator=operator,
                                     colone=colone, coltwo=coltwo, pdplot=plotpath)

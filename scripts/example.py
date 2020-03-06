@@ -27,7 +27,7 @@ coltwo = "competitor_price"
 ######################################################################################
 # NOW USE THE METHOD THAT GENERATES THE PARTIAL DEPENDENCE PLOT AND SAVES IT
  
-plt = partd.generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, "../config.yml")
+plt = partd.generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo)
 
 plt.savefig("Example.png", format='png')
 

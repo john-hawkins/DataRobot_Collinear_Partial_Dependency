@@ -19,20 +19,6 @@ import io
 
 
 # ################################################################################
-def load_config(configfile):
-    """
-      LOAD CONFIG DATA
-      For running the batch scoring script
-    """
-    config = yaml.safe_load(open(configfile))
-    API_TOKEN = config['API_TOKEN']
-    USERNAME = config['USERNAME']
-    DATAROBOT_KEY = config['DATAROBOT_KEY']
-    HOST = config['HOST']
-    return API_TOKEN,USERNAME,DATAROBOT_KEY,HOST
-
-
-# ################################################################################
 def get_test_values(data, col):
     """ generate the list of values to test for a specified column """
     vals = data[col].drop_duplicates()
@@ -43,12 +29,11 @@ def get_test_values(data, col):
 
  
 # ################################################################################
-def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfile):
+def generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo):
     """ Generate two unique partial dependency plots for a differenced column.
         In each plot one of the reference columns is held unchanged and the other is
         modified to ensure that the difference relationship is maintained.
     """
-    API_TOKEN, USERNAME, DATAROBOT_KEY, HOST = load_config(configfile) 
     PROJECT_ID=proj.id
     MODEL_ID=mod.id
     TARGET=proj.target
@@ -152,9 +137,9 @@ def generate_diff_field_pd_embedded(proj, mod, data, diffcol, colone, coltwo):
     return 'data:image/png;base64,{}'.format(plot_url)
 
 # ################################################################################
-def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, configfile):
+def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo):
     """ Generate the partial dependency plot for a variable that is defined as a difference between 2 other variables """
-    pdep = generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo, configfile)
+    pdep = generate_diff_col_pd_data(proj, mod, data, diffcol, colone, coltwo )
 
     TARGET=proj.target
 
@@ -171,8 +156,8 @@ def generate_diff_col_pd_plot(proj, mod, data, diffcol, colone, coltwo, configfi
     return plt
 
 # ################################################################################
-def generate_diff_col_pd_plot_and_save(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE, plotpath):
-    plt = generate_diff_col_pd_plot(proj, mod, pdata, diffcol, colone, coltwo, CONFIG_FILE)
+def generate_diff_col_pd_plot_and_save(proj, mod, pdata, diffcol, colone, coltwo, plotpath):
+    plt = generate_diff_col_pd_plot(proj, mod, pdata, diffcol, colone, coltwo)
     print("PLOT GENERATED -- SAVING TO: ", plotpath)
     plt.savefig(plotpath, format='png')
     print("SAVED")
