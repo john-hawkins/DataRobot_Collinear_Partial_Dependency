@@ -3,9 +3,7 @@ Collinear Feature Partial Dependency
 =====================================
 
 ```
-STATUS: First Functional Version
-
-CURRENTLY: Removing requirement for python batch scoring
+STATUS: Functional
 
 TODO: Extend collinear function support beyond difference
 ```
@@ -25,8 +23,9 @@ of the model.
 
 ## Dependencies
  
-You will need a DataRobot account and access to a dedicated prediction server.
+You will need a DataRobot account.
 
+The code assumes you have configured your DataRobot API to use the YAML config.
 
 You will also need a bunch of python libraries, including the DataRobot API
 
@@ -36,14 +35,6 @@ pip install pandas
 pip install datarobot
 ```
 
-You will need create the [CONFIG](config.yml.example) file and fill in the required details from the deployed model.
-
-We provide an example you can copy and then modify:
-
-```
-cp config.yml.example config.yml
-vi config.yml
-```
 
 ## About
 
